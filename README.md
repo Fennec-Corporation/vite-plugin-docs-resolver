@@ -43,6 +43,43 @@ export default defineConfig({
 
 ### In JavaScript or TypeScript
 
+```tsx
+// src/components/Button.tsx
+import React, { type ReactNode } from 'react';
+
+/**
+ * Properties for the Button component.
+ */
+export interface ButtonProps {
+  /**
+   * The visual style of the button.
+   * @default 'primary'
+   */
+  variant?: 'primary' | 'secondary' | 'quiet';
+
+  /**
+   * Handler called when the button is clicked.
+   */
+  onPress?: () => void;
+
+  /**
+   * Button content to display.
+   */
+  children?: ReactNode;
+}
+
+/**
+ * A standard action button component.
+ */
+export function Button({ variant = 'primary', onPress, children }: ButtonProps) {
+  return (
+    <button className={`btn btn-${variant}`} onClick={onPress}>
+      {children}
+    </button>
+  );
+}
+```
+
 ```typescript
 import docs from 'docs:./components/Button';
 
@@ -60,12 +97,12 @@ import { exports, links } from 'docs:@my-scope/ui';
 ### In MDX
 
 ```mdx
-import docs from 'docs:@react-spectrum/s2';
+import docs from 'docs:@my-scope/ui/Button';
 
+{/* Feed extracted metadata directly into your documentation components */}
 <PropsTable
-  docs={docs.exports.Form}
+  component={docs.exports.Button}
   links={docs.links}
-  props={['size', 'labelPosition', 'necessityIndicator', 'isRequired']}
 />
 ```
 
