@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Vite plugin to resolve and extract code documentation from TypeScript and JavaScript modules",
   "type": "module",
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -22,11 +22,15 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
     "dev": "tsup --watch",
+    "build": "tsup",
+    "build:plugin": "tsup",
+    "dev:plugin": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "example:dev": "pnpm --filter @example/doc dev",
+    "example:build": "pnpm --filter @example/doc build"
   },
   "peerDependencies": {
     "vite": "^5.0.0 || ^6.0.0"
