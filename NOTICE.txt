@@ -1,0 +1,12 @@
+Vite Plugin Docs Resolver
+=================
+The following is a list of sources from which code was used/modified in this codebase.
+
+-------------------------------------------------------------------------------
+This codebase contains a modified portion of code from Adobe which can be obtained at:
+  * SOURCE:
+    * https://github.com/adobe/react-spectrum/tree/7f191ea88dab88787098e7fe8fe0e4f7ab0c0656
+  * LICENSE:
+    * https://github.com/adobe/react-spectrum/blob/7f191ea88dab88787098e7fe8fe0e4f7ab0c0656/LICENSE
+
+-------------------------------------------------------------------------------
