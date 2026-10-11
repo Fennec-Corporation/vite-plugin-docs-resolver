@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-docs-resolver",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Vite plugin to resolve and extract code documentation from TypeScript and JavaScript modules",
   "license": "Apache-2.0",
   "author": "Anis Oseryx <anis.oseryx@gmail.com>",
@@ -43,7 +43,9 @@
   },
   "files": [
     "dist",
-    "NOTICE.txt"
+    "NOTICE.txt",
+    "LICENSE",
+    "README.md"
   ],
   "scripts": {
     "dev": "tsup --watch",
