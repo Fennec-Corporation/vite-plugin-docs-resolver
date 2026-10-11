@@ -7,11 +7,12 @@ declare module '*.mdx' {
 }
 
 declare module 'docs:*' {
-  export const exports: Record<string, any>;
-  export const links: Record<string, any>;
+  import { DocNode } from 'vite-plugin-docs-resolver';
+  export const exports: Record<string, DocNode>;
+  export const links: Record<string, DocNode>;
   const docs: {
-    exports: Record<string, any>;
-    links: Record<string, any>;
+    exports: Record<string, DocNode>;
+    links: Record<string, DocNode>;
   };
   export default docs;
 }

@@ -19,18 +19,12 @@ export function Example({ code, children }: ExampleProps): React.JSX.Element {
 
   return (
     <div className="example-container">
-      <div className="example-preview">
-        {children}
-      </div>
+      <div className="example-preview">{children}</div>
       {code && (
         <div className="example-code-wrapper">
           <div className="example-code-header">
             <span className="example-code-lang">tsx</span>
-            <button
-              type="button"
-              className="example-copy-btn"
-              onClick={handleCopy}
-            >
+            <button type="button" className="example-copy-btn" onClick={handleCopy}>
               {copied ? 'Copied!' : 'Copy'}
             </button>
           </div>

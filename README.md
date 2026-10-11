@@ -22,22 +22,45 @@ export default defineConfig({
   plugins: [
     docsResolver({
       prefix: 'docs:', // default prefix
-      sourceFields: ['source', 'types:source', 'module', 'main', 'types']
-    })
-  ]
+      sourceFields: ['source', 'types:source', 'module', 'main', 'types'],
+    }),
+  ],
 });
+```
+
+Before you use the plugin add this to your `env.d.ts` to satisfy the types:
+
+```ts
+/// <reference types="vite/client" />
+
+declare module '*.mdx' {
+  import type { ComponentType } from 'react';
+  const Component: ComponentType<any>;
+  export default Component;
+}
+
+declare module 'docs:*' {
+  import { DocNode } from 'vite-plugin-docs-resolver';
+  export const exports: Record<string, DocNode>;
+  export const links: Record<string, DocNode>;
+  const docs: {
+    exports: Record<string, DocNode>;
+    links: Record<string, DocNode>;
+  };
+  export default docs;
+}
 ```
 
 ## Plugin Options
 
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `prefix` | `string` | `'docs:'` | Import specifier prefix to intercept |
-| `include` | `string \| RegExp \| (string \| RegExp)[]` | `undefined` | Filter specifiers to include (supports glob strings or regex) |
-| `exclude` | `string \| RegExp \| (string \| RegExp)[]` | `undefined` | Filter specifiers to exclude |
-| `crawlPackages` | `string \| RegExp \| (string \| RegExp)[] \| ((pkg: string) => boolean)` | `undefined` | Specific packages allowed to be crawled for links (e.g. monorepo packages) |
-| `sourceFields` | `string[]` | `['source', 'types:source', 'module', 'main', 'types']` | `package.json` fields to check when resolving packages to source files |
-| `resolveSource` | `(specifier: string, importer?: string) => string \| undefined` | `undefined` | Custom resolver function to override source file resolution |
+| Option          | Type                                                                     | Default                                                 | Description                                                                |
+| --------------- | ------------------------------------------------------------------------ | ------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `prefix`        | `string`                                                                 | `'docs:'`                                               | Import specifier prefix to intercept                                       |
+| `include`       | `string \| RegExp \| (string \| RegExp)[]`                               | `undefined`                                             | Filter specifiers to include (supports glob strings or regex)              |
+| `exclude`       | `string \| RegExp \| (string \| RegExp)[]`                               | `undefined`                                             | Filter specifiers to exclude                                               |
+| `crawlPackages` | `string \| RegExp \| (string \| RegExp)[] \| ((pkg: string) => boolean)` | `undefined`                                             | Specific packages allowed to be crawled for links (e.g. monorepo packages) |
+| `sourceFields`  | `string[]`                                                               | `['source', 'types:source', 'module', 'main', 'types']` | `package.json` fields to check when resolving packages to source files     |
+| `resolveSource` | `(specifier: string, importer?: string) => string \| undefined`          | `undefined`                                             | Custom resolver function to override source file resolution                |
 
 ## Usage
 
@@ -100,10 +123,8 @@ import { exports, links } from 'docs:@my-scope/ui';
 import docs from 'docs:@my-scope/ui/Button';
 
 {/* Feed extracted metadata directly into your documentation components */}
-<PropsTable
-  component={docs.exports.Button}
-  links={docs.links}
-/>
+
+<PropsTable component={docs.exports.Button} links={docs.links} />
 ```
 
 ## Output Structure

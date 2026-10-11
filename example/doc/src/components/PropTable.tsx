@@ -1,4 +1,5 @@
 import React from 'react';
+import { DocNode } from 'vite-plugin-docs-resolver';
 
 export interface PropTableProps {
   /**
@@ -8,13 +9,13 @@ export interface PropTableProps {
   /**
    * Directly provided doc node (e.g. interface or component).
    */
-  docNode?: any;
+  docNode?: DocNode;
   /**
    * Standalone or combined docs payload { exports, links }.
    */
   docs?: {
-    exports: Record<string, any>;
-    links: Record<string, any>;
+    exports: Record<string, DocNode>;
+    links: Record<string, DocNode>;
   };
   /**
    * Export name to lookup in docs.exports.
@@ -23,14 +24,14 @@ export interface PropTableProps {
   /**
    * Map of referenced type definitions from docs.links.
    */
-  links?: Record<string, any>;
+  links?: Record<string, DocNode>;
 }
 
 function resolveReference(
   nodeOrLink: any,
-  links: Record<string, any> = {},
-  exportsMap: Record<string, any> = {}
-): any {
+  links: Record<string, DocNode> = {},
+  exportsMap: Record<string, DocNode> = {}
+): DocNode {
   if (!nodeOrLink) return null;
 
   // 1. Direct ID lookup in links
@@ -40,16 +41,14 @@ function resolveReference(
 
   // 2. Lookup by name, local identifier, or ID suffix
   const refName =
-    nodeOrLink.name ||
-    nodeOrLink.local ||
-    (nodeOrLink.id ? nodeOrLink.id.split(':').pop() : null);
+    nodeOrLink.name || nodeOrLink.local || (nodeOrLink.id ? nodeOrLink.id.split(':').pop() : null);
 
   if (refName) {
     if (exportsMap[refName]) {
       return exportsMap[refName];
     }
     // Search links values for matching symbol name
-    const foundInLinks = Object.values(links).find((n: any) => n?.name === refName);
+    const foundInLinks = Object.values(links).find((n: DocNode) => n?.name === refName);
     if (foundInLinks) {
       return foundInLinks;
     }
@@ -70,7 +69,9 @@ function formatTypeString(typeNode: any, links: Record<string, any> = {}): strin
       }
       return linked.name;
     }
-    return typeNode.name || typeNode.local || (typeNode.id ? typeNode.id.split(':').pop() : 'unknown');
+    return (
+      typeNode.name || typeNode.local || (typeNode.id ? typeNode.id.split(':').pop() : 'unknown')
+    );
   }
 
   if (typeNode.type === 'reference') {
@@ -200,7 +201,9 @@ export function PropTable(props: PropTableProps): React.JSX.Element {
           {propKeys.map(propName => {
             const prop = allProps[propName];
             const isOptional = prop?.optional ?? true;
-            const defaultValue = prop?.default ? String(prop.default).replace(/^['"]|['"]$/g, '') : '-';
+            const defaultValue = prop?.default
+              ? String(prop.default).replace(/^['"]|['"]$/g, '')
+              : '-';
             const description = prop?.description || '-';
             const formattedType = formatTypeString(prop?.value, links);
 

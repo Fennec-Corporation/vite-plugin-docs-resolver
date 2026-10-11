@@ -21,20 +21,14 @@ export function HeaderInfo(props: HeaderInfoProps): React.JSX.Element {
   return (
     <div className="header-info">
       <div className="header-info-main">
-        {packageData?.name && (
-          <code className="header-info-pkg">{packageData.name}</code>
-        )}
-        {packageData?.version && (
-          <span className="header-info-badge">v{packageData.version}</span>
-        )}
+        {packageData?.name && <code className="header-info-pkg">{packageData.name}</code>}
+        {packageData?.version && <span className="header-info-badge">v{packageData.version}</span>}
       </div>
 
       {(componentNames.length > 0 || sourceData.length > 0) && (
         <div className="header-info-links">
           {componentNames.length > 0 && (
-            <span className="header-info-components">
-              Components: {componentNames.join(', ')}
-            </span>
+            <span className="header-info-components">Components: {componentNames.join(', ')}</span>
           )}
           {sourceData.map((item, idx) => (
             <a

@@ -3,7 +3,7 @@ import { HeaderInfo, PropTable } from './components';
 import packageData from '@example/button/package.json';
 
 ```jsx import
-import {Button} from '@example/button';
+import { Button } from '@example/button';
 import Bell from './components/Bell';
 ```
 
@@ -15,8 +15,12 @@ import Bell from './components/Bell';
   packageData={packageData}
   componentNames={['Button']}
   sourceData={[
-    {type: 'Docs', url: 'https://github.com/Fennec-Corporation/vite-plugin-docs-resolver/blob/master/example/button/src/Button.tsx'}
-  ]} />
+    {
+      type: 'Docs',
+      url: 'https://github.com/Fennec-Corporation/vite-plugin-docs-resolver/blob/master/example/button/src/Button.tsx',
+    },
+  ]}
+/>
 
 ## Example
 
@@ -57,7 +61,9 @@ function Example() {
   let [count, setCount] = React.useState(0);
 
   return (
-    <Button variant="primary" onPress={() => setCount(c => c + 1)}>{count} Dogs</Button>
+    <Button variant="primary" onPress={() => setCount(c => c + 1)}>
+      {count} Dogs
+    </Button>
   );
 }
 ```
@@ -91,9 +97,11 @@ function Example() {
 ### Over Background
 
 ```tsx example
-<div style={{backgroundColor: 'rgb(15, 121, 125)', padding: '15px 20px'}}>
+<div style={{ backgroundColor: 'rgb(15, 121, 125)', padding: '15px 20px' }}>
   <Button variant="overBackground">Test</Button>
-  <Button variant="overBackground" isQuiet>Test</Button>
+  <Button variant="overBackground" isQuiet>
+    Test
+  </Button>
 </div>
 ```
 
