@@ -56,8 +56,7 @@ export function docsResolver(options: DocsResolverOptions = {}): Plugin {
         return null;
       }
 
-      const resolvedSource =
-        virtualToSourceMap.get(id) || id.slice(`\0${prefix}`.length);
+      const resolvedSource = virtualToSourceMap.get(id) || id.slice(`\0${prefix}`.length);
 
       const docsPayload = crawlDocs(resolvedSource, rootDir, opts);
 
@@ -124,7 +123,7 @@ export function docsResolver(options: DocsResolverOptions = {}): Plugin {
       }
 
       return Array.from(affectedModules);
-    }
+    },
   };
 }
 

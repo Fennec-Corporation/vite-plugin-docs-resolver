@@ -494,11 +494,7 @@ export interface DocsResolverOptions {
    * Package names or patterns allowed to be crawled for links.
    * By default, third-party packages in node_modules are not crawled.
    */
-  crawlPackages?:
-    | string
-    | RegExp
-    | readonly (string | RegExp)[]
-    | ((pkgName: string) => boolean);
+  crawlPackages?: string | RegExp | readonly (string | RegExp)[] | ((pkgName: string) => boolean);
 
   /**
    * Fields in package.json to inspect for source code in order of precedence.

@@ -1,5 +1,5 @@
 import { parse } from '@babel/parser';
-import traverseModule, { type NodePath, type Binding } from '@babel/traverse';
+import traverseModule, { type NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import doctrine from 'doctrine';
 import type {
@@ -7,13 +7,13 @@ import type {
   ExtractedDependency,
   ExtractedFileDocs,
   JSDocMetadata,
-  ParameterDocNode
+  ParameterDocNode,
 } from './types';
 
 // Handle ESM / CJS interoperability for @babel/traverse
-const traverse = (typeof traverseModule === 'function'
-  ? traverseModule
-  : (traverseModule as any).default) as typeof traverseModule;
+const traverse = (
+  typeof traverseModule === 'function' ? traverseModule : (traverseModule as any).default
+) as typeof traverseModule;
 
 export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
   const nodeCache = new Map<any, any>();
@@ -34,8 +34,8 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
       'jsx',
       'classPrivateProperties',
       'classPrivateMethods',
-      'importAttributes'
-    ]
+      'importAttributes',
+    ],
   });
 
   function addDependency(specifier: string, symbols: Map<string, string>, isAll = false) {
@@ -51,7 +51,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
       dependencies.push({
         specifier,
         symbols: new Map(symbols),
-        isAll
+        isAll,
       });
     }
   }
@@ -115,11 +115,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
     },
 
     ExportAllDeclaration(path: NodePath<t.ExportAllDeclaration>) {
-      addDependency(
-        path.node.source.value,
-        new Map([['*', '*']]),
-        true
-      );
+      addDependency(path.node.source.value, new Map([['*', '*']]), true);
     },
 
     ExportDefaultDeclaration(path: NodePath<t.ExportDefaultDeclaration>) {
@@ -128,7 +124,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
       if (val) {
         exports['default'] = val;
       }
-    }
+    },
   });
 
   function processExport(path: NodePath | null | undefined, node: any = {}): any {
@@ -190,9 +186,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
         }
       }
 
-      const exts = path.node.superClass
-        ? [processExport(path.get('superClass') as NodePath)]
-        : [];
+      const exts = path.node.superClass ? [processExport(path.get('superClass') as NodePath)] : [];
       const docs = getJSDocs(path);
       const name = path.node.id?.name ?? '';
 
@@ -207,7 +201,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
             properties,
             typeParameters: path.node.typeParameters
               ? (path.get('typeParameters.params') as NodePath[]).map(p => processExport(p))
-              : []
+              : [],
           },
           docs
         )
@@ -229,7 +223,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
             name,
             value: typeAnnotation ? processExport(typeAnnotation) : { type: 'any' },
             optional: path.node.optional || false,
-            access: path.node.accessibility
+            access: path.node.accessibility,
           },
           docs
         )
@@ -250,7 +244,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
         type: 'interface',
         extends: [],
         properties,
-        typeParameters: []
+        typeParameters: [],
       });
     }
 
@@ -267,7 +261,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
             type: 'property',
             name,
             value: processExport(path.get('value') as NodePath),
-            optional: false
+            optional: false,
           },
           docs
         )
@@ -277,9 +271,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
     if (path.isClassMethod() || (path as any).isTSDeclareMethod?.() || path.isObjectMethod()) {
       const methodNode = path.node as any;
       const key = methodNode.key;
-      const name = t.isStringLiteral(key)
-        ? key.value
-        : (key as t.Identifier).name;
+      const name = t.isStringLiteral(key) ? key.value : (key as t.Identifier).name;
       const docs = getJSDocs(path);
 
       let value: any;
@@ -288,9 +280,10 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
           ? processExport(path.get('returnType.typeAnnotation') as NodePath)
           : { type: 'any' };
       } else if (methodNode.kind === 'set') {
-        value = methodNode.params[0] && (methodNode.params[0] as any).typeAnnotation
-          ? processExport(path.get('params.0.typeAnnotation.typeAnnotation') as NodePath)
-          : { type: 'any' };
+        value =
+          methodNode.params[0] && (methodNode.params[0] as any).typeAnnotation
+            ? processExport(path.get('params.0.typeAnnotation.typeAnnotation') as NodePath)
+            : { type: 'any' };
       } else {
         const params = path.get('params') as NodePath[];
         value = {
@@ -301,7 +294,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
             : { type: 'void' },
           typeParameters: methodNode.typeParameters
             ? (path.get('typeParameters.params') as NodePath[]).map(p => processExport(p))
-            : []
+            : [],
         };
       }
 
@@ -313,7 +306,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
             name,
             value,
             access: methodNode.accessibility,
-            static: methodNode.static
+            static: methodNode.static,
           },
           docs
         )
@@ -333,17 +326,19 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
           type: 'component',
           id: name ? `${filePath}:${name}` : null,
           name,
-          props: propsParam && (propsParam.node as any).typeAnnotation
-            ? processExport(propsParam.get('typeAnnotation.typeAnnotation') as NodePath)
-            : null,
+          props:
+            propsParam && (propsParam.node as any).typeAnnotation
+              ? processExport(propsParam.get('typeAnnotation.typeAnnotation') as NodePath)
+              : null,
           typeParameters: fnNode.typeParameters
             ? (path.get('typeParameters.params') as NodePath[]).map(p => processExport(p))
             : [],
-          ref: refParam && (refParam.node as any).typeAnnotation
-            ? processExport(refParam.get('typeAnnotation.typeAnnotation') as NodePath)
-            : null,
+          ref:
+            refParam && (refParam.node as any).typeAnnotation
+              ? processExport(refParam.get('typeAnnotation.typeAnnotation') as NodePath)
+              : null,
           description: docs.description || null,
-          examples: docs.examples || null
+          examples: docs.examples || null,
         });
       } else {
         const docs = getJSDocs(path);
@@ -363,7 +358,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
                 : { type: 'any' },
               typeParameters: fnNode.typeParameters
                 ? (path.get('typeParameters.params') as NodePath[]).map(p => processExport(p))
-                : []
+                : [],
             },
             docs
           )
@@ -380,7 +375,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
         return Object.assign(node, {
           type: 'application',
           base,
-          typeParameters: resolvedTypeParams
+          typeParameters: resolvedTypeParams,
         });
       }
 
@@ -400,7 +395,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
         const leftName = left.name ?? (path.node.left as any).name ?? '';
         return Object.assign(node, {
           type: 'identifier',
-          name: `${leftName}.${path.node.right.name}`
+          name: `${leftName}.${path.node.right.name}`,
         });
       }
     }
@@ -418,7 +413,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
         type: 'reference',
         local: localName,
         imported: importedName,
-        specifier: parent.source.value
+        specifier: parent.source.value,
       });
     }
 
@@ -432,7 +427,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
         type: 'reference',
         local: localName,
         imported: 'default',
-        specifier: parent.source.value
+        specifier: parent.source.value,
       });
     }
 
@@ -449,7 +444,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
           ? (path.get('typeParameters.params') as NodePath[]).map(p => processExport(p))
           : [],
         description: docs.description || null,
-        access: docs.access
+        access: docs.access,
       });
     }
 
@@ -459,9 +454,9 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
         readonly: path.node.readonly,
         typeParameter: {
           ...processExport(path.get('typeParameter') as NodePath),
-          isMappedType: true
+          isMappedType: true,
         },
-        typeAnnotation: processExport(path.get('typeAnnotation') as NodePath)
+        typeAnnotation: processExport(path.get('typeAnnotation') as NodePath),
       });
     }
 
@@ -496,7 +491,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
             properties,
             typeParameters: path.node.typeParameters
               ? (path.get('typeParameters.params') as NodePath[]).map(p => processExport(p))
-              : []
+              : [],
           },
           docs
         )
@@ -522,7 +517,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
 
       return Object.assign(node, {
         type: 'object',
-        properties
+        properties,
       });
     }
 
@@ -530,14 +525,14 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
       if (path.node.operator === 'keyof') {
         return Object.assign(node, {
           type: 'keyof',
-          keyof: processExport(path.get('typeAnnotation') as NodePath)
+          keyof: processExport(path.get('typeAnnotation') as NodePath),
         });
       }
 
       return Object.assign(node, {
         type: 'typeOperator',
         operator: path.node.operator,
-        value: processExport(path.get('typeAnnotation') as NodePath)
+        value: processExport(path.get('typeAnnotation') as NodePath),
       });
     }
 
@@ -565,7 +560,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
             type: 'property',
             name,
             value,
-            optional: path.node.optional || false
+            optional: path.node.optional || false,
           },
           docs
         )
@@ -593,8 +588,8 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
                 : { type: 'any' },
               typeParameters: path.node.typeParameters
                 ? (path.get('typeParameters.params') as NodePath[]).map(p => processExport(p))
-                : []
-            }
+                : [],
+            },
           },
           docs
         )
@@ -612,18 +607,17 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
           {
             type: 'property',
             name,
-            indexType: processExport(path.get('parameters.0.typeAnnotation.typeAnnotation') as NodePath),
-            value: processExport(path.get('typeAnnotation.typeAnnotation') as NodePath)
+            indexType: processExport(
+              path.get('parameters.0.typeAnnotation.typeAnnotation') as NodePath
+            ),
+            value: processExport(path.get('typeAnnotation.typeAnnotation') as NodePath),
           },
           docs
         )
       );
     }
 
-    if (
-      path.isTSExpressionWithTypeArguments() ||
-      (path as any).isTSInstantiationExpression?.()
-    ) {
+    if (path.isTSExpressionWithTypeArguments() || (path as any).isTSInstantiationExpression?.()) {
       const exprNode = path.node as any;
       if (exprNode.typeParameters) {
         return Object.assign(node, {
@@ -631,7 +625,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
           base: processExport(path.get('expression') as NodePath),
           typeParameters: (path.get('typeParameters.params') as NodePath[]).map(p =>
             processExport(p)
-          )
+          ),
         });
       }
 
@@ -643,7 +637,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
       if (!binding) {
         return Object.assign(node, {
           type: 'identifier',
-          name: path.node.name
+          name: path.node.name,
         });
       }
 
@@ -674,7 +668,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
     if (path.isTSArrayType()) {
       return Object.assign(node, {
         type: 'array',
-        elementType: processExport(path.get('elementType') as NodePath)
+        elementType: processExport(path.get('elementType') as NodePath),
       });
     }
 
@@ -682,7 +676,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
       const typePaths = path.get('types') as NodePath[];
       return Object.assign(node, {
         type: 'union',
-        elements: typePaths.map(t => processExport(t))
+        elements: typePaths.map(t => processExport(t)),
       });
     }
 
@@ -697,7 +691,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
           if (q.value.raw) {
             elements.push({
               type: 'string',
-              value: q.value.raw
+              value: q.value.raw,
             });
           }
           if (!q.tail) {
@@ -707,13 +701,13 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
 
         return Object.assign(node, {
           type: 'template',
-          elements
+          elements,
         });
       }
 
       return Object.assign(node, {
         type: typeof (literal as any).value,
-        value: (literal as any).value
+        value: (literal as any).value,
       });
     }
 
@@ -727,7 +721,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
           : { type: 'any' },
         typeParameters: path.node.typeParameters
           ? (path.get('typeParameters.params') as NodePath[]).map(p => processExport(p))
-          : []
+          : [],
       });
     }
 
@@ -735,7 +729,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
       const typePaths = path.get('types') as NodePath[];
       return Object.assign(node, {
         type: 'intersection',
-        types: typePaths.map(p => processExport(p))
+        types: typePaths.map(p => processExport(p)),
       });
     }
 
@@ -743,12 +737,8 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
       return Object.assign(node, {
         type: 'typeParameter',
         name: path.node.name,
-        constraint: path.node.constraint
-          ? processExport(path.get('constraint') as NodePath)
-          : null,
-        default: path.node.default
-          ? processExport(path.get('default') as NodePath)
-          : null
+        constraint: path.node.constraint ? processExport(path.get('constraint') as NodePath) : null,
+        default: path.node.default ? processExport(path.get('default') as NodePath) : null,
       });
     }
 
@@ -756,7 +746,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
       const elemPaths = path.get('elementTypes') as NodePath[];
       return Object.assign(node, {
         type: 'tuple',
-        elements: elemPaths.map(t => processExport(t))
+        elements: elemPaths.map(t => processExport(t)),
       });
     }
 
@@ -766,7 +756,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
         checkType: processExport(path.get('checkType') as NodePath),
         extendsType: processExport(path.get('extendsType') as NodePath),
         trueType: processExport(path.get('trueType') as NodePath),
-        falseType: processExport(path.get('falseType') as NodePath)
+        falseType: processExport(path.get('falseType') as NodePath),
       });
     }
 
@@ -774,7 +764,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
       return Object.assign(node, {
         type: 'indexedAccess',
         objectType: processExport(path.get('objectType') as NodePath),
-        indexType: processExport(path.get('indexType') as NodePath)
+        indexType: processExport(path.get('indexType') as NodePath),
       });
     }
 
@@ -797,7 +787,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
       name: name ?? 'param',
       value: typePath ? processExport(typePath) : { type: 'any' },
       optional: Boolean(node.optional),
-      rest: isRest
+      rest: isRest,
     };
   }
 
@@ -830,7 +820,10 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
     }
 
     // Direct React.forwardRef or imported namespace
-    if (t.isIdentifier(callee.object, { name: 'React' }) && t.isIdentifier(callee.property, { name })) {
+    if (
+      t.isIdentifier(callee.object, { name: 'React' }) &&
+      t.isIdentifier(callee.property, { name })
+    ) {
       return true;
     }
 
@@ -849,11 +842,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
         return true;
       }
 
-      if (
-        returnType &&
-        t.isTSUnionType(returnType) &&
-        returnType.types.some(isJSXElementType)
-      ) {
+      if (returnType && t.isTSUnionType(returnType) && returnType.types.some(isJSXElementType)) {
         return true;
       }
 
@@ -869,7 +858,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
           ) {
             returnsJSX = true;
           }
-        }
+        },
       });
 
       return returnsJSX;
@@ -888,7 +877,10 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
       return true;
     }
 
-    if (t.isTSTypeReference(returnType) && t.isIdentifier(returnType.typeName, { name: 'ReactNode' })) {
+    if (
+      t.isTSTypeReference(returnType) &&
+      t.isIdentifier(returnType.typeName, { name: 'ReactNode' })
+    ) {
       return true;
     }
 
@@ -906,14 +898,14 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
       parsed = doctrine.parse(comments, {
         unwrap: true,
         sloppy: true,
-        recoverable: true
+        recoverable: true,
       });
     } catch {
       return {};
     }
 
     const result: JSDocMetadata = {
-      description: parsed.description || undefined
+      description: parsed.description || undefined,
     };
 
     for (const tag of parsed.tags) {
@@ -954,9 +946,7 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
     }
 
     if (result.examples) {
-      result.examples = [
-        ...new Set(result.examples.map(ex => ex.trim()).filter(Boolean))
-      ];
+      result.examples = [...new Set(result.examples.map(ex => ex.trim()).filter(Boolean))];
     }
 
     return result;
@@ -1036,6 +1026,6 @@ export function extractDocs(code: string, filePath: string): ExtractedFileDocs {
   return {
     filePath,
     exports,
-    dependencies
+    dependencies,
   };
 }

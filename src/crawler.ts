@@ -145,6 +145,6 @@ export function crawlDocs(
 
   return {
     exports: finalExports,
-    links
+    links,
   };
 }

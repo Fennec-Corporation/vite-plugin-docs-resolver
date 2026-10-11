@@ -51,7 +51,7 @@ describe('resolveSourceFile', () => {
         name: 'test-lib',
         version: '1.0.0',
         source: 'src/index.ts',
-        main: 'dist/index.js'
+        main: 'dist/index.js',
       })
     );
 
@@ -66,11 +66,11 @@ describe('resolveSourceFile', () => {
     fs.writeFileSync(customTarget, 'export const Custom = true;');
 
     const resolved = resolveSourceFile('virtual:special', undefined, tempDir, {
-      resolveSource: (specifier) => {
+      resolveSource: specifier => {
         if (specifier === 'virtual:special') {
           return customTarget;
         }
-      }
+      },
     });
 
     expect(resolved).toBe(customTarget);
@@ -209,7 +209,7 @@ describe('crawlDocs dependency crawler', () => {
 
     // Allowed: crawls external-ui when specified in crawlPackages
     const resultAllowed = crawlDocs(mainFile, tempDir, {
-      crawlPackages: ['external-ui']
+      crawlPackages: ['external-ui'],
     });
     expect(resultAllowed.exports.AppConfig).toBeDefined();
     expect(Object.keys(resultAllowed.links).some(k => k.includes('external-ui'))).toBe(true);

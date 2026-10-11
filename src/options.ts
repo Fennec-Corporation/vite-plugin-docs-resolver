@@ -16,7 +16,7 @@ export function normalizeOptions(options: DocsResolverOptions = {}): NormalizedD
     'types:source',
     'module',
     'main',
-    'types'
+    'types',
   ];
   const filter = createFilter(options.include, options.exclude);
   const crawlPackages = createPackageFilter(options.crawlPackages);
@@ -26,7 +26,7 @@ export function normalizeOptions(options: DocsResolverOptions = {}): NormalizedD
     sourceFields,
     resolveSource: options.resolveSource,
     filter,
-    crawlPackages
+    crawlPackages,
   };
 }
 

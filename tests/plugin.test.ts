@@ -10,9 +10,9 @@ describe('Vite plugin end-to-end integration', () => {
     server = await createServer({
       root: __dirname,
       server: {
-        middlewareMode: true
+        middlewareMode: true,
       },
-      plugins: [docsResolver()]
+      plugins: [docsResolver()],
     });
   });
 
@@ -98,12 +98,12 @@ describe('Vite plugin end-to-end integration', () => {
                   `;
                 }
                 return null;
-              }
-            }
-          ]
-        }
+              },
+            },
+          ],
+        },
       },
-      plugins: [docsResolver()]
+      plugins: [docsResolver()],
     });
 
     expect(output).toBeDefined();

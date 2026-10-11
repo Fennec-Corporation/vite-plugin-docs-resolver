@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import path from 'node:path';
 import fs from 'node:fs';
 import { docsResolver } from '../src/index';
@@ -17,7 +17,7 @@ describe('docsResolver plugin hooks', () => {
   it('resolves virtual id with prefix and respects exclude filter', () => {
     const plugin = docsResolver({
       prefix: 'docs:',
-      exclude: ['**/internal/**']
+      exclude: ['**/internal/**'],
     });
 
     const resolveId = plugin.resolveId as Function;
@@ -38,7 +38,7 @@ describe('docsResolver plugin hooks', () => {
 
   it('supports custom prefix option', () => {
     const plugin = docsResolver({
-      prefix: 'docgen:'
+      prefix: 'docgen:',
     });
 
     const resolveId = plugin.resolveId as Function;
@@ -71,7 +71,7 @@ describe('docsResolver plugin hooks', () => {
     const context = {
       addWatchFile(file: string) {
         addedWatchFiles.push(file);
-      }
+      },
     };
 
     const loadedCode = await load.call(context, resolvedId);
@@ -99,15 +99,18 @@ describe('docsResolver plugin hooks', () => {
         },
         invalidateModule(mod: any) {
           invalidated.push(mod);
-        }
-      }
+        },
+      },
     };
 
-    const modules = handleHotUpdate.call({}, {
-      file: '/mock/Button.tsx',
-      server: mockServer,
-      modules: []
-    });
+    const modules = handleHotUpdate.call(
+      {},
+      {
+        file: '/mock/Button.tsx',
+        server: mockServer,
+        modules: [],
+      }
+    );
 
     expect(invalidated).toContain(mockModule);
     expect(modules).toContain(mockModule);
